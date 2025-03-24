@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test'
+import { expect, Page } from '@playwright/test'
 
 export class RegistrationPage {
   constructor(private page: Page) {}
@@ -13,10 +13,15 @@ export class RegistrationPage {
 
   async submitRegistration() {
     await this.page.click('#register-button')
-    await this.page.click('text=Continue')
+    await this.page.click('.register-continue-button')
   }
 
   async getEmailHeader() {
     return this.page.locator('.header-links .account').textContent()
+  }
+
+  async verifyItemIsAddedToCart() {
+    const notificationMessage = await this.page.locator('#bar-notification .content').textContent()
+    expect(notificationMessage).toEqual('The product has been added to your shopping cart')
   }
 }
