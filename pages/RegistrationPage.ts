@@ -1,7 +1,7 @@
 import { expect, Page } from '@playwright/test'
 
 export class RegistrationPage {
-  constructor(private page: Page) {}
+  constructor(private page: Page) { }
 
   async fillRegistrationForm(email: string, firstName: string, lastName: string, password: string) {
     await this.page.fill('#FirstName', firstName)
@@ -16,12 +16,12 @@ export class RegistrationPage {
     await this.page.click('.register-continue-button')
   }
 
-  async getEmailHeader() {
-    return this.page.locator('.header-links .account').textContent()
+  async getEmailHeader(): Promise<string> {
+    return (await this.page.locator('.header-links .account').textContent()) ?? ''
   }
 
   async verifyItemIsAddedToCart() {
     const notificationMessage = await this.page.locator('#bar-notification .content').textContent()
-    expect(notificationMessage).toEqual('The product has been added to your shopping cart')
+    expect(notificationMessage).toBe('The product has been added to your shopping cart')
   }
 }

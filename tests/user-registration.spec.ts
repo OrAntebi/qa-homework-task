@@ -9,21 +9,22 @@ test('User Registration', async ({ page }) => {
     const homePage = new HomePage(page)
     const shoppingCartPage = new ShoppingCartPage(page)
 
-    const uniqueEmail = `testuser${Date.now()}@example.com`
+    const uniqueEmail = await utilService.getRandomEmailAddress()
 
     await page.goto('https://demowebshop.tricentis.com')
-    await page.click('.ico-register')
+    await homePage.navigateToRegistration()
 
-    await registrationPage.fillRegistrationForm(uniqueEmail, 'John', 'Doe', 'Test@1234')
+    await registrationPage.fillRegistrationForm(uniqueEmail, 'Test1', 'Test2', 'aT12dHas!@f1')
     await registrationPage.submitRegistration()
 
     const emailHeader = await registrationPage.getEmailHeader()
-    expect(emailHeader).toEqual(uniqueEmail)
+    expect(emailHeader).toBe(uniqueEmail)
 
     await homePage.navigateToDigitalDownloads()
-    const productName = await utilService.addFirstProductToCart(page)
+    const productName = await homePage.addFirstProductToCart()
     await homePage.verifyProductAddedToCart()
-    await homePage.navigateToShoppingCart()
-    await shoppingCartPage.isProductInCart(productName)
 
+    await homePage.navigateToShoppingCart()
+    if (!productName) throw new Error('Failed to retrieve product name');
+    await shoppingCartPage.isProductInCart(productName);
 })
