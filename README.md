@@ -1,33 +1,127 @@
-# Test Standard
+# 🚗 Buggy Cars Rating - Automation Project
 
-## **Test Purpose**
-The goal of this test is to verify the user registration and purchasing workflow on the Demo Web Shop website. The test ensures that a user can successfully register, log in, add a product to the cart, and validate the cart contents.
+This project automates tests for [Buggy Cars Rating](https://buggy.justtestit.org) using **Playwright** with a hybrid approach that includes **UI + API testing**.
 
-## **Preconditions**
-- Access to **[Demo Web Shop](https://demowebshop.tricentis.com)**.
-- The test should use a **unique email ID** for each registration.
-- Browser and network connectivity must be **stable**.
+---
 
-## **Steps to Execute**
-1. Navigate to **[Demo Web Shop](https://demowebshop.tricentis.com)**.
-2. Click on **"Register"**.
-3. Fill in personal details (**First Name, Last Name, Email**).
-4. Enter a **password** and confirm it.
-5. Click on **"Register"**.
-6. Click on **"Continue"**.
-7. Verify that the **registered email** appears in the header.
-8. Click on **"Digital Downloads"**.
-9. Select a **random product** and click **"Add to Cart"**.
-10. Click on **"Shopping Cart"**.
-11. Verify that the **product name** in the cart matches the one selected.
+## ✅ Summary
 
-## **Post-Conditions**
-- The **registered account should be unique** to avoid duplicate registration issues.
-- The **shopping cart should be emptied** to maintain test integrity.
-- **Close the browser session**.
+1. Run a guest test to create a user and save the token.
+2. Use the token (`auth.json`) to run authenticated UI/API tests.
+3. Enjoy stable, automated coverage for both flows.
 
-## **Validation Criteria**
-- **Successful registration** should display the **registered email** in the header.
-- The **selected product** should be present in the shopping cart.
-- The **product name** in the cart should match the **selected product**.
+---
+
+## 🧪 Test Coverage Summary
+
+| Category | File                            | Description                                      |
+|----------|----------------------------------|--------------------------------------------------|
+| API - Authenticated | `tests/api/auth.spec.ts`       | - Validate user profile  
+|          |                                  | - Match user token to user data  
+|          |                                  | - Fetch model list  
+|          |                                  | - Vote for a model  
+|          |                                  | - Get model details by ID  
+| API - Guest        | `tests/api/guest.spec.ts`      | - Register user  
+|          |                                  | - Login and save token to `auth.json`  
+| UI - Guest         | `tests/ui/guest.spec.ts`       | - Register user via UI  
+|          |                                  | - Login via UI and save token  
+| UI - Authenticated | `tests/ui/auth.spec.ts`        | - Show profile page  
+|          |                                  | - Vote for a car  
+|          |                                  | - Navigate to model page  
+|          |                                  | - Navigate to make page  
+|          |                                  | - Update profile info  
+|          |                                  | - Logout to homepage  
+| Hybrid             | `tests/hybrid/auth.spec.ts`    | - Update gender via API  
+|          |                                  | - Verify updated gender in UI  
+
+---
+
+## 📁 Project Structure
+
+```
+qa-automation-task/
+├── api/ # API endpoint definitions
+│ └── endpoints.ts
+├── fixtures/ # Custom Playwright fixtures
+│ └── ui-fixture.ts
+├── helpers/ # Utility functions (e.g. wait for loader)
+│ └── waitLoaderFinish.ts
+├── pages/ # Page Object Models for UI components
+│ ├── HeaderSection.ts
+│ ├── HomePage.ts
+│ ├── MakePage.ts
+│ ├── ModelPage.ts
+│ ├── OverallPage.ts
+│ ├── ProfilePage.ts
+│ └── RegistrationPage.ts
+├── services/ # Business logic & data (e.g. user, auth)
+│ ├── auth.service.ts
+│ ├── model.service.ts
+│ └── user.service.ts
+├── storage/ # Auth token for logged-in sessions
+│ └── auth.json
+├── tests/ # All test specs
+│ ├── api/ # API-only tests
+│ │ ├── auth.spec.ts
+│ │ └── guest.spec.ts
+│ ├── hybrid/ # Combined API + UI tests
+│ │ └── auth.spec.ts
+│ └── ui/ # UI-only tests
+│ ├── auth.spec.ts
+│ └── guest.spec.ts
+├── .env # Environment variables (optional)
+├── package.json # Project dependencies & scripts
+└── playwright.config.ts # Playwright configuration
+```
+
+---
+
+## 🚀 Getting Started
+
+### Step 1: Install dependencies
+
+```
+npm install
+```
+
+### ✅ Step 2: Register a User and Generate Token
+
+Before running any authenticated tests, you **must** register a user and save the session token to `storage/auth.json`.
+
+You can generate it via:
+
+- UI test:
+
+```
+  npx playwright test tests/ui/guest.spec.ts
+```
+
+- or API test:
+```
+  npx playwright test tests/api/guest.spec.ts
+```
+
+## 🧪 Running Authenticated API Tests
+
+Run API tests that require authentication:
+
+```
+npx playwright test tests/api/auth.spec.ts
+```
+
+## 🧪 Running Authenticated UI Tests
+
+Run UI tests that require authentication:
+
+```
+npx playwright test tests/ui/auth.spec.ts
+```
+
+
+
+> ⚠️ **Important:** Make sure the file `storage/auth.json` exists before running these tests.  
+> This file is generated after registration and is used as `storageState` for logged-in sessions.
+
+---
+
 

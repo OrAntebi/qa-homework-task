@@ -1,27 +1,45 @@
 import { expect, Page } from '@playwright/test'
 
+const FORM_CONTROL_SELECTOR = (name: string) => `[formcontrolname="${name}"]`
+
+type User = {
+  username: string
+  firstName: string
+  lastName: string
+  password: string
+}
+
 export class RegistrationPage {
   constructor(private page: Page) { }
 
-  async fillRegistrationForm(email: string, firstName: string, lastName: string, password: string) {
-    await this.page.fill('#FirstName', firstName)
-    await this.page.fill('#LastName', lastName)
-    await this.page.fill('#Email', email)
-    await this.page.fill('#Password', password)
-    await this.page.fill('#ConfirmPassword', password)
+  async fillRegistrationForm(user: User) {
+    const fields = {
+      ...user,
+      confirmPassword: user.password,
+    }
+
+    for (const [name, value] of Object.entries(fields)) {
+      const locator = this.page.locator(FORM_CONTROL_SELECTOR(name))
+      await locator.fill(value)
+      await expect(locator).toHaveClass(/ng-valid/)
+    }
   }
 
   async submitRegistration() {
-    await this.page.click('#register-button')
-    await this.page.click('.register-continue-button')
+    const submitBtn = this.page.locator('button:has-text("Register")')
+    await expect(submitBtn).toBeEnabled()
+    await submitBtn.click()
+
   }
 
-  async getEmailHeader(): Promise<string> {
-    return (await this.page.locator('.header-links .account').textContent()) ?? ''
-  }
+  async isRegistrationSuccessful(): Promise<boolean> {
+    const successMsg = this.page.locator('.result.alert-success')
 
-  async verifyItemIsAddedToCart() {
-    const notificationMessage = await this.page.locator('#bar-notification .content').textContent()
-    expect(notificationMessage).toBe('The product has been added to your shopping cart')
+    try {
+      await successMsg.waitFor({ state: 'visible', timeout: 5000 })
+      return true
+    } catch {
+      return false
+    }
   }
 }
