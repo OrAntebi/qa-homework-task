@@ -117,11 +117,17 @@ Run UI tests that require authentication:
 npx playwright test tests/ui/auth.spec.ts
 ```
 
-
-
 > ⚠️ **Important:** Make sure the file `storage/auth.json` exists before running these tests.  
 > This file is generated after registration and is used as `storageState` for logged-in sessions.
 
 ---
 
+## 📊 Test Report
 
+After running the tests, you can also **view a visual test report** using Playwright's built-in reporter.
+
+To open the report, run:
+
+```
+npx playwright show-report
+```
